@@ -1,38 +1,49 @@
-import { StatusBadge } from "./components/games/StatusBadge";
-import { Button } from "./components/ui/Button";
-
-const statuses = ["Want to Play", "Playing", "Completed", "Dropped"] as const;
+import { Navigate, Route, Routes } from "react-router";
+import { AppLayout } from "./layouts/AppLayout";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { PlaceholderPage } from "./pages/PlaceholderPage";
+import { ProfilesPage } from "./pages/ProfilesPage";
 
 function App() {
   return (
-    <main className="min-h-screen bg-background px-5 py-12 text-foreground">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="font-display text-heading-1 font-bold text-brand">GAMEFLIX</h1>
+    <Routes>
+      <Route path="/" element={<Navigate to="/profiles" replace />} />
 
-        <p className="mt-2 font-body text-muted">Your backlog, your rules.</p>
+      <Route path="/profiles" element={<ProfilesPage />} />
 
-        <section className="mt-10">
-          <h2 className="mb-4 font-display text-heading-3">Buttons</h2>
+      <Route element={<AppLayout />}>
+        <Route
+          path="/home"
+          element={<PlaceholderPage title="Home" description="Your next adventure starts here." />}
+        />
 
-          <div className="flex flex-wrap gap-4">
-            <Button>Save Game</Button>
-            <Button variant="secondary">Edit Game</Button>
-            <Button variant="danger">Delete Game</Button>
-            <Button disabled>Saving...</Button>
-          </div>
-        </section>
+        <Route
+          path="/library"
+          element={<PlaceholderPage title="My Library" description="Your backlog, your rules." />}
+        />
 
-        <section className="mt-10">
-          <h2 className="mb-4 font-display text-heading-3">Game Status</h2>
+        <Route
+          path="/games/new"
+          element={
+            <PlaceholderPage title="Add Game" description="Make room for your next adventure." />
+          }
+        />
 
-          <div className="flex flex-wrap gap-3">
-            {statuses.map((status) => (
-              <StatusBadge key={status} status={status} />
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
+        <Route
+          path="/games/:id"
+          element={<PlaceholderPage title="Game Details" description="Every game has a story." />}
+        />
+
+        <Route
+          path="/games/:id/edit"
+          element={
+            <PlaceholderPage title="Edit Game" description="A new chapter for your collection." />
+          }
+        />
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
 
