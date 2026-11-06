@@ -67,5 +67,6 @@
 
   /* LAYOUT */
 
-  --container-content: 82rem;
+  --container-shell: 90rem; /* 1440px */
+  --container-content: 82rem; /* 1312px */
 }
