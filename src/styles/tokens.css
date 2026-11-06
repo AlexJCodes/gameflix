@@ -1,0 +1,71 @@
+@theme {
+  /* COLORS */
+
+  --color-background: #0c0d10;
+  --color-background-secondary: #121318;
+
+  --color-surface: #1b1c22;
+  --color-surface-elevated: #25262e;
+
+  --color-brand: #f45b56;
+  --color-brand-hover: #ff7770;
+
+  --color-foreground: #f6f2ec;
+  --color-muted: #acaab4;
+
+  --color-divider: #373840;
+
+  --color-success: #80d7a5;
+  --color-warning: #f1c477;
+  --color-danger: #ff8585;
+
+  --color-focus: #fff1d7;
+
+  /* FONT FAMILIES */
+
+  --font-body: "Inter Variable", sans-serif;
+  --font-display: "Space Grotesk Variable", sans-serif;
+
+  /* TYPOGRAPHY */
+
+  --text-display: 4rem;
+  --text-display--line-height: 1.4;
+
+  --text-heading-1: 2.5rem;
+  --text-heading-1--line-height: 1.4;
+
+  --text-heading-2: 1.75rem;
+  --text-heading-2--line-height: 1.4;
+
+  --text-heading-3: 1.25rem;
+  --text-heading-3--line-height: 1.4;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.4;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.4;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
+
+  --text-button: 0.875rem;
+  --text-button--line-height: 1.4;
+
+  /* SPACING */
+
+  --spacing: 0.25rem;
+  --spacing-page-mobile: 1.25rem;
+  --spacing-page-desktop: 4rem;
+  --spacing-control: 3rem;
+
+  /* BORDER RADIUS */
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+
+  /* LAYOUT */
+
+  --container-content: 82rem;
+}
