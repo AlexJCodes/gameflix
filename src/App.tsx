@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router";
 import { AppLayout } from "./layouts/AppLayout";
+import { LibraryPage } from "./pages/LibraryPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { ProfilesPage } from "./pages/ProfilesPage";
@@ -17,10 +18,7 @@ function App() {
           element={<PlaceholderPage title="Home" description="Your next adventure starts here." />}
         />
 
-        <Route
-          path="/library"
-          element={<PlaceholderPage title="My Library" description="Your backlog, your rules." />}
-        />
+        <Route path="/library" element={<LibraryPage />} />
 
         <Route
           path="/games/new"

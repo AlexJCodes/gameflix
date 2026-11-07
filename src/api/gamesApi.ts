@@ -80,13 +80,24 @@ async function request<T>(path: string, options: ApiRequestOptions = {}): Promis
 }
 
 // GET - Collection
-export function getGames(
+export async function getGames(
   handle: string,
   { status, signal }: GetGamesOptions = {},
 ): Promise<Game[]> {
   const query = status ? `?status=${encodeURIComponent(status)}` : "";
 
-  return request<Game[]>(`${gamesPath(handle)}${query}`, { signal });
+  const path = `${gamesPath(handle)}${query}`;
+  const data = await request<unknown>(path, { signal });
+
+  if (!Array.isArray(data)) {
+    throw new ApiError({
+      kind: "invalid-response",
+      method: "GET",
+      path,
+    });
+  }
+
+  return data as Game[];
 }
 
 // GET - Single game
