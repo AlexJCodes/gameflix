@@ -1,40 +1,100 @@
 import type { CreateGameInput, Game, GameStatus, UpdateGameInput } from "../types/game";
+import { ApiError, isAbortError } from "./ApiError";
 
 const API_BASE_URL = "https://questlog-api.vercel.app/api";
 
-// Build the endpoint for a specific profile.
+type ApiRequestOptions = RequestInit & {
+  responseType?: "json" | "none";
+};
+
+type GetGamesOptions = {
+  status?: GameStatus;
+  signal?: AbortSignal;
+};
+
 function gamesPath(handle: string): string {
   return `/${encodeURIComponent(handle)}/games`;
 }
 
-// Shared HTTP request handler.
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, options);
+async function request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
+  const { responseType = "json", ...fetchOptions } = options;
 
-  if (!response.ok) {
-    throw new Error(`API request failed (${response.status})`);
+  const method = (fetchOptions.method ?? "GET").toUpperCase();
+
+  let response: Response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, fetchOptions);
+  } catch (cause) {
+    // Cancellation is intentional, not a request failure.
+    if (isAbortError(cause) || fetchOptions.signal?.aborted) {
+      throw cause;
+    }
+
+    throw new ApiError({
+      kind: "network",
+      method,
+      path,
+      cause,
+    });
   }
 
-  if (response.status === 204) {
+  if (!response.ok) {
+    throw new ApiError({
+      kind: "http",
+      method,
+      path,
+      status: response.status,
+    });
+  }
+
+  // DELETE does not require a JSON response body.
+  if (responseType === "none") {
     return undefined as T;
   }
 
-  return (await response.json()) as T;
+  if (response.status === 204) {
+    throw new ApiError({
+      kind: "invalid-response",
+      method,
+      path,
+      status: response.status,
+    });
+  }
+
+  try {
+    return (await response.json()) as T;
+  } catch (cause) {
+    if (isAbortError(cause) || fetchOptions.signal?.aborted) {
+      throw cause;
+    }
+
+    throw new ApiError({
+      kind: "invalid-response",
+      method,
+      path,
+      status: response.status,
+      cause,
+    });
+  }
 }
 
-// GET - Fetch all games, optionally filtered by status.
-export function getGames(handle: string, status?: GameStatus): Promise<Game[]> {
+// GET - Collection
+export function getGames(
+  handle: string,
+  { status, signal }: GetGamesOptions = {},
+): Promise<Game[]> {
   const query = status ? `?status=${encodeURIComponent(status)}` : "";
 
-  return request<Game[]>(`${gamesPath(handle)}${query}`);
+  return request<Game[]>(`${gamesPath(handle)}${query}`, { signal });
 }
 
-// GET - Fetch a single game by ID.
-export function getGame(handle: string, id: string): Promise<Game> {
-  return request<Game>(`${gamesPath(handle)}/${encodeURIComponent(id)}`);
+// GET - Single game
+export function getGame(handle: string, id: string, signal?: AbortSignal): Promise<Game> {
+  return request<Game>(`${gamesPath(handle)}/${encodeURIComponent(id)}`, { signal });
 }
 
-// POST - Create a new game.
+// POST - Create game
 export function createGame(handle: string, game: CreateGameInput): Promise<Game> {
   return request<Game>(gamesPath(handle), {
     method: "POST",
@@ -45,7 +105,7 @@ export function createGame(handle: string, game: CreateGameInput): Promise<Game>
   });
 }
 
-// PATCH - Update selected game fields.
+// PATCH - Update game
 export function updateGame(handle: string, id: string, changes: UpdateGameInput): Promise<Game> {
   return request<Game>(`${gamesPath(handle)}/${encodeURIComponent(id)}`, {
     method: "PATCH",
@@ -56,9 +116,10 @@ export function updateGame(handle: string, id: string, changes: UpdateGameInput)
   });
 }
 
-// DELETE - Remove a game.
+// DELETE - Remove game
 export function deleteGame(handle: string, id: string): Promise<void> {
   return request<void>(`${gamesPath(handle)}/${encodeURIComponent(id)}`, {
     method: "DELETE",
+    responseType: "none",
   });
 }
