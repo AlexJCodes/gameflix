@@ -41,5 +41,6 @@ export function useSaveGame(handle: string) {
 
     isSaving,
     error,
+    clearError: () => setError(null),
   };
 }

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Game, GameStatus } from "../../types/game";
+import { Button } from "../ui/Button";
 import { GameCover } from "./GameCover";
 import { StatusBadge } from "./StatusBadge";
 
@@ -12,9 +13,10 @@ const statusLabels: Record<GameStatus, "Want to Play" | "Playing" | "Completed" 
 
 type GameDetailsViewProps = {
   game: Game;
+  onDelete: () => void;
 };
 
-export function GameDetailsView({ game }: GameDetailsViewProps) {
+export function GameDetailsView({ game, onDelete }: GameDetailsViewProps) {
   const validRating =
     typeof game.rating === "number" &&
     Number.isInteger(game.rating) &&
@@ -87,6 +89,19 @@ export function GameDetailsView({ game }: GameDetailsViewProps) {
 
             <p className="mt-3 text-caption text-muted">A note from you, for you.</p>
           </section>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to={`/games/${game.id}/edit`}
+              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-md border border-brand bg-brand px-5 font-body text-button font-bold text-background hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus sm:flex-none"
+            >
+              Edit Game
+            </Link>
+
+            <Button variant="danger" onClick={onDelete} className="min-w-0 flex-1 sm:flex-none">
+              Delete Game
+            </Button>
+          </div>
         </div>
 
         {/* Desktop cover */}

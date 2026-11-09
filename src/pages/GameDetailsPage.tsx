@@ -1,14 +1,46 @@
-import { Link, useParams } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import { ApiError } from "../api/ApiError";
 import { ErrorPanel } from "../components/feedback/ErrorPanel";
+import { DeleteGameDialog } from "../components/games/DeleteGameDialog";
 import { GameDetailsView } from "../components/games/GameDetailsView";
 import { useGame } from "../hooks/useGame";
+import { useSaveGame } from "../hooks/useSaveGame";
 
 export function GameDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const handle = import.meta.env.VITE_QUESTLOG_HANDLE?.trim() || null;
 
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
   const { game, isLoading, error, retry } = useGame(handle, id);
+
+  const { remove, isSaving, error: deleteError, clearError } = useSaveGame(handle ?? "");
+
+  function openDeleteDialog() {
+    clearError();
+    setIsDeleteOpen(true);
+  }
+
+  async function handleDelete() {
+    if (!game) return;
+
+    try {
+      await remove(game.id);
+
+      navigate("/library", {
+        replace: true,
+        state: {
+          successMessage: `${game.title} deleted.`,
+        },
+      });
+    } catch {
+      // Keep the dialog open so the user can retry.
+      // The hook handles the error state.
+    }
+  }
 
   if (!handle) {
     return <p className="text-muted">Choose a player to view this game.</p>;
@@ -70,5 +102,19 @@ export function GameDetailsPage() {
 
   if (!game) return null;
 
-  return <GameDetailsView game={game} />;
+  return (
+    <>
+      <GameDetailsView game={game} onDelete={openDeleteDialog} />
+
+      {isDeleteOpen && (
+        <DeleteGameDialog
+          gameTitle={game.title}
+          isDeleting={isSaving}
+          hasError={Boolean(deleteError)}
+          onConfirm={handleDelete}
+          onCancel={() => setIsDeleteOpen(false)}
+        />
+      )}
+    </>
+  );
 }

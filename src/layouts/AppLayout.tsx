@@ -1,4 +1,5 @@
 import { Outlet } from "react-router";
+import { SuccessToast } from "../components/feedback/SuccessToast";
 import { AppHeader } from "../components/layout/AppHeader";
 
 export function AppLayout() {
@@ -19,6 +20,8 @@ export function AppLayout() {
       >
         <Outlet />
       </main>
+
+      <SuccessToast />
     </div>
   );
 }
