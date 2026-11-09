@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { AppLayout } from "./layouts/AppLayout";
+import { AddGamePage } from "./pages/AddGamePage";
 import { GameDetailsPage } from "./pages/GameDetailsPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
@@ -28,9 +29,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "games/new",
-        element: (
-          <PlaceholderPage title="Add Game" description="Make room for your next adventure." />
-        ),
+        Component: AddGamePage,
       },
       {
         path: "games/:id",
