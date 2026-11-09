@@ -85,8 +85,10 @@ export function GameForm({ initialGame, onSave, onCancel, isSaving, error }: Gam
     };
 
     if (initialGame) {
-      // PATCH must also allow clearing optional values.
-      game.coverUrl = coverUrl.trim() || null;
+      if (coverUrl.trim()) {
+        game.coverUrl = coverUrl.trim();
+      }
+
       game.rating = rating;
       game.notes = notes.trim();
     } else {
