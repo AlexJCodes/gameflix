@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { getGameHeroUrl } from "../../data/gameArtwork";
 import type { Game, GameStatus } from "../../types/game";
 import { Button } from "../ui/Button";
 import { GameCover } from "./GameCover";
@@ -27,7 +28,12 @@ export function GameDetailsView({ game, onDelete }: GameDetailsViewProps) {
     <article className="-mx-page-mobile -mt-8 lg:-mx-page-desktop">
       {/* Hero */}
       <div className="relative flex h-80 items-end px-6 pb-6 lg:h-90 lg:px-page-desktop lg:pb-12">
-        <GameCover src={game.coverUrl} alt="" className="absolute inset-0" />
+        <GameCover
+          src={getGameHeroUrl(game.title)}
+          alt=""
+          fallbackSrc="/images/games/fallback/missing-hero-art.webp"
+          className="absolute inset-0"
+        />
 
         <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/25 via-transparent to-background" />
 
