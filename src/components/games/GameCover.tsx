@@ -1,29 +1,33 @@
 import { useState } from "react";
 
+const DEFAULT_FALLBACK = "/images/games/fallback/missing-cover-art.webp";
+
 type GameCoverProps = {
   src?: string | null;
   alt: string;
   className?: string;
+  fallbackSrc?: string;
 };
 
-export function GameCover({ src, alt, className = "" }: GameCoverProps) {
+export function GameCover({
+  src,
+  alt,
+  className = "",
+  fallbackSrc = DEFAULT_FALLBACK,
+}: GameCoverProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
   const hasCover = Boolean(src && src !== failedSrc);
+  const imageSrc = hasCover && src ? src : fallbackSrc;
 
   return (
     <div className={`overflow-hidden bg-surface ${className}`}>
-      {hasCover ? (
-        <img
-          src={src ?? undefined}
-          alt={alt}
-          onError={() => setFailedSrc(src ?? null)}
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <div className="flex h-full items-center justify-center bg-surface-elevated p-4 text-center font-body text-body-sm text-muted">
-          Cover unavailable
-        </div>
-      )}
+      <img
+        src={imageSrc}
+        alt={hasCover ? alt : alt ? "Cover artwork unavailable" : ""}
+        onError={hasCover ? () => setFailedSrc(src ?? null) : undefined}
+        className="h-full w-full object-cover"
+      />
     </div>
   );
 }

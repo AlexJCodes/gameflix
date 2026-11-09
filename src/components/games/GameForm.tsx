@@ -242,52 +242,42 @@ export function GameForm({ initialGame, onSave, onCancel, isSaving, error }: Gam
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <p className="text-body-sm font-semibold">Rating · Optional</p>
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-2 text-body-sm font-semibold">Rating · Optional</legend>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-body-sm font-semibold">Rating · Optional</legend>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {stars.map((star) => (
-              <button
-                key={star}
-                type="button"
-                disabled={isSaving}
-                aria-label={`Rate ${star} out of 5`}
-                aria-pressed={rating === star}
-                onClick={() => setRating(star)}
-                className={`flex size-11 items-center justify-center rounded-md border border-divider bg-surface text-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${
-                  rating !== null && star <= rating ? "text-warning" : "text-muted"
-                }`}
-              >
-                <span aria-hidden="true">★</span>
-              </button>
-            ))}
-
+        <div className="flex flex-wrap items-center gap-2">
+          {stars.map((star) => (
             <button
+              key={star}
               type="button"
-              disabled={isSaving || rating === null}
-              onClick={() => setRating(null)}
-              className="min-h-11 px-2 text-caption text-muted enabled:hover:text-foreground"
+              disabled={isSaving}
+              aria-label={`Rate ${star} out of 5`}
+              aria-pressed={rating === star}
+              onClick={() => setRating(star)}
+              className={`flex size-11 items-center justify-center rounded-md border border-divider bg-surface text-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${
+                rating !== null && star <= rating ? "text-warning" : "text-muted"
+              }`}
             >
-              Clear
+              <span aria-hidden="true">★</span>
             </button>
-          </div>
+          ))}
 
-          <p className="text-caption text-muted" aria-live="polite">
-            {rating === null
-              ? "Not rated · Choose 1–5, or leave unset"
-              : `${rating} of 5 · Your rating`}
-          </p>
-        </fieldset>
+          <button
+            type="button"
+            disabled={isSaving || rating === null}
+            onClick={() => setRating(null)}
+            className="min-h-11 px-2 text-caption text-muted enabled:hover:text-foreground"
+          >
+            Clear
+          </button>
+        </div>
 
         <p className="text-caption text-muted" aria-live="polite">
           {rating === null
             ? "Not rated · Choose 1–5, or leave unset"
             : `${rating} of 5 · Your rating`}
         </p>
-      </div>
+      </fieldset>
 
       <div className="flex flex-col gap-2">
         <label htmlFor="game-notes" className="text-body-sm font-semibold">
