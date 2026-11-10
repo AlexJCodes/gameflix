@@ -81,9 +81,11 @@ export function HomeGameRow({ id, title, games }: HomeGameRowProps) {
 
     const cardsPerPage = Math.max(1, Math.floor((visibleWidth + gap) / (cardWidth + gap)));
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     container.scrollBy({
       left: direction * cardsPerPage * (cardWidth + gap),
-      behavior: "smooth",
+      behavior: prefersReducedMotion ? "auto" : "smooth",
     });
   };
 
@@ -174,7 +176,7 @@ export function HomeGameRow({ id, title, games }: HomeGameRowProps) {
       {/* Scrollable game collection */}
       <div
         ref={scrollRef}
-        className="overflow-x-auto overscroll-x-contain scroll-smooth scroll-px-page-mobile snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:scroll-px-page-desktop"
+        className="overflow-x-auto overscroll-x-contain scroll-smooth scroll-px-page-mobile snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:hidden lg:scroll-px-page-desktop"
       >
         <ul className="flex w-max gap-4 px-page-mobile pb-2 lg:gap-6 lg:px-page-desktop">
           {games.map((game) => (
