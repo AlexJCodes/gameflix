@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { EmptyState } from "../components/feedback/EmptyState";
 import { ErrorPanel } from "../components/feedback/ErrorPanel";
+import { HomeGameRow } from "../components/home/HomeGameRow";
 import { HomeHero } from "../components/home/HomeHero";
 import { useGames } from "../hooks/useGames";
 
@@ -63,9 +64,56 @@ export function HomePage() {
     );
   }
 
+  // Derive collections from the saved games.
+  const homeRows = [
+    {
+      id: "continue-playing",
+      title: "Continue Playing",
+      games: games.filter((game) => game.status === "playing"),
+    },
+    {
+      id: "up-next",
+      title: "Up Next",
+      games: games.filter((game) => game.status === "want"),
+    },
+    {
+      id: "completed-adventures",
+      title: "Completed Adventures",
+      games: games.filter((game) => game.status === "completed"),
+    },
+    {
+      id: "maybe-later",
+      title: "Maybe Later",
+      games: games.filter((game) => game.status === "dropped"),
+    },
+    {
+      id: "top-rated",
+      title: "Top Rated by You",
+      games: games
+        .filter(
+          (game) =>
+            typeof game.rating === "number" &&
+            Number.isInteger(game.rating) &&
+            game.rating >= 4 &&
+            game.rating <= 5,
+        )
+        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)),
+    },
+  ];
+
   return (
     <div className="-mx-page-mobile -mt-8 lg:-mx-page-desktop">
       <HomeHero game={featuredGame} />
+
+      <div className="flex flex-col gap-12 pt-6 pb-12">
+        {homeRows.map((row) => (
+          <HomeGameRow key={row.id} id={row.id} title={row.title} games={row.games} />
+        ))}
+
+        <p className="px-page-mobile font-body text-caption text-muted lg:px-page-desktop">
+          {games.length} saved games. Entirely your story.
+        </p>
+      </div>
     </div>
   );
 }
