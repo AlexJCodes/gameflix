@@ -1,4 +1,5 @@
 import { type SubmitEvent, useRef, useState } from "react";
+import { FALLBACK_COVER_URL } from "../../data/gameArtwork";
 import type { CreateGameInput, Game, GameStatus } from "../../types/game";
 import { Button } from "../ui/Button";
 
@@ -32,7 +33,9 @@ export function GameForm({ initialGame, onSave, onCancel, isSaving, error }: Gam
   const [title, setTitle] = useState(initialGame?.title ?? "");
   const [platform, setPlatform] = useState(initialGame?.platform ?? "");
   const [status, setStatus] = useState<GameStatus>(initialGame?.status ?? "want");
-  const [coverUrl, setCoverUrl] = useState(initialGame?.coverUrl ?? "");
+  const [coverUrl, setCoverUrl] = useState(
+    initialGame?.coverUrl === FALLBACK_COVER_URL ? "" : (initialGame?.coverUrl ?? ""),
+  );
   const [rating, setRating] = useState<number | null>(initialGame?.rating ?? null);
   const [notes, setNotes] = useState(initialGame?.notes ?? "");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -85,7 +88,7 @@ export function GameForm({ initialGame, onSave, onCancel, isSaving, error }: Gam
     };
 
     if (initialGame) {
-      game.coverUrl = coverUrl.trim() || null;
+      game.coverUrl = coverUrl.trim() || FALLBACK_COVER_URL;
       game.rating = rating;
       game.notes = notes.trim();
     } else {

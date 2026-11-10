@@ -1,5 +1,8 @@
 const HERO_DIRECTORY = "/images/games/heroes";
 
+export const FALLBACK_COVER_URL =
+  "https://raw.githubusercontent.com/AlexJCodes/gameflix/feat/game-api/public/images/games/fallback/missing-cover-art.webp";
+
 const heroFilesByTitle: Record<string, string> = {
   balatro: "balatro-hero.webp",
   celeste: "celeste-hero.webp",
