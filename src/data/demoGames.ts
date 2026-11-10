@@ -130,4 +130,10 @@ export const demoGames: DemoGame[] = [
     status: "completed",
     coverFilename: "it-takes-two-cover.webp",
   },
+  {
+    title: "The Legend of Zelda: Tears of the Kingdom",
+    platform: "Nintendo Switch",
+    status: "want",
+    coverFilename: "tears-of-the-kingdom-cover.webp",
+  },
 ];

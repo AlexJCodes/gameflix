@@ -27,6 +27,8 @@ const heroFilesByTitle: Record<string, string> = {
   "the burning crusade": "wow-tbc-hero.webp",
   "world of warcraft: wrath of the lich king": "wow-wotlk-hero.webp",
   "wrath of the lich king": "wow-wotlk-hero.webp",
+  "tears of the kingdom": "tears-of-the-kingdom-hero.webp",
+  "the legend of zelda: tears of the kingdom": "tears-of-the-kingdom-hero.webp",
 };
 
 export function getGameHeroUrl(title: string): string | null {

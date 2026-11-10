@@ -85,10 +85,7 @@ export function GameForm({ initialGame, onSave, onCancel, isSaving, error }: Gam
     };
 
     if (initialGame) {
-      if (coverUrl.trim()) {
-        game.coverUrl = coverUrl.trim();
-      }
-
+      game.coverUrl = coverUrl.trim() || null;
       game.rating = rating;
       game.notes = notes.trim();
     } else {
