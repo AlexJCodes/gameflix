@@ -33,7 +33,10 @@ export function GameCard({ game }: GameCardProps) {
       />
 
       <div className="mt-2 flex flex-col gap-2">
-        <h2 className="wrap-break-word font-body text-[15px] font-semibold text-foreground">
+        <h2
+          title={game.title}
+          className="min-w-0 truncate font-body text-[15px] font-semibold text-foreground"
+        >
           {game.title}
         </h2>
 
