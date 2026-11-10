@@ -3,9 +3,9 @@ import { AppLayout } from "./layouts/AppLayout";
 import { AddGamePage } from "./pages/AddGamePage";
 import { EditGamePage } from "./pages/EditGamePage";
 import { GameDetailsPage } from "./pages/GameDetailsPage";
+import { HomePage } from "./pages/HomePage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { ProfilesPage } from "./pages/ProfilesPage";
 
 export const router = createBrowserRouter([
@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "home",
-        element: <PlaceholderPage title="Home" description="Your next adventure starts here." />,
+        Component: HomePage,
       },
       {
         path: "library",
