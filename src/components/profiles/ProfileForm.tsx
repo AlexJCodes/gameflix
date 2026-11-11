@@ -38,7 +38,12 @@ export function ProfileForm({ profile, onSave, onCancel, isSaving }: ProfileForm
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex w-full max-w-120 flex-col gap-6">
+    <form
+      onSubmit={handleSubmit}
+      aria-busy={isSaving}
+      noValidate
+      className="flex w-full max-w-120 flex-col gap-6"
+    >
       {/* Form heading */}
       <div>
         <h1 className="font-display text-heading-2 font-bold">
@@ -59,6 +64,7 @@ export function ProfileForm({ profile, onSave, onCancel, isSaving }: ProfileForm
         </label>
 
         <input
+          disabled={isSaving}
           id="profile-name"
           type="text"
           value={name}
@@ -92,6 +98,7 @@ export function ProfileForm({ profile, onSave, onCancel, isSaving }: ProfileForm
               className="flex min-w-0 cursor-pointer flex-col items-center gap-1.5"
             >
               <input
+                disabled={isSaving}
                 type="radio"
                 name="profile-avatar"
                 value={avatar.id}

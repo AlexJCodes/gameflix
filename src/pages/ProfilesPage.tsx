@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import gameflixLogo from "../assets/branding/gameflix-logo.svg";
 import { DeleteProfileDialog } from "../components/profiles/DeleteProfileDialog";
@@ -34,6 +34,7 @@ export function ProfilesPage() {
 
   const [isStartingDemo, setIsStartingDemo] = useState(false);
   const demoPending = useRef(false);
+  const demoRunRef = useRef(0);
 
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
@@ -49,9 +50,18 @@ export function ProfilesPage() {
   const canAddProfile = profiles.length < MAX_PROFILES;
   const isShowingForm = isCreating || editingProfile !== null;
 
+  useEffect(() => {
+    return () => {
+      demoRunRef.current += 1;
+    };
+  }, []);
+
   function handleSelectProfile(profile: Profile) {
     try {
       setActiveProfile(profile);
+
+      demoRunRef.current += 1;
+
       navigate("/home");
     } catch (caughtError) {
       setError(
@@ -154,6 +164,8 @@ export function ProfilesPage() {
   async function handleTryDemo() {
     if (demoPending.current) return;
 
+    const currentRun = ++demoRunRef.current;
+
     demoPending.current = true;
     setIsStartingDemo(true);
     setError(null);
@@ -161,15 +173,22 @@ export function ProfilesPage() {
     try {
       await prepareDemoLibrary();
 
+      // Ignore the result if this demo request was cancelled.
+      if (currentRun !== demoRunRef.current) return;
+
       setActiveDemo();
       navigate("/home");
     } catch (caughtError) {
-      console.error("[Gameflix] Demo initialization failed", caughtError);
+      if (currentRun !== demoRunRef.current) return;
 
+      console.error("[Gameflix] Demo initialization failed", caughtError);
       setError("Couldn't prepare the demo. Please try again.");
     } finally {
       demoPending.current = false;
-      setIsStartingDemo(false);
+
+      if (currentRun === demoRunRef.current) {
+        setIsStartingDemo(false);
+      }
     }
   }
 
