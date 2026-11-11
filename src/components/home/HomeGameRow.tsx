@@ -178,9 +178,9 @@ export function HomeGameRow({ id, title, games }: HomeGameRowProps) {
         ref={scrollRef}
         className="overflow-x-auto overscroll-x-contain scroll-smooth scroll-px-page-mobile snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:hidden lg:scroll-px-page-desktop"
       >
-        <ul className="flex w-max gap-4 px-page-mobile pb-2 lg:gap-6 lg:px-page-desktop">
+        <ul className="flex w-max gap-4 px-page-mobile pt-2 pb-4 lg:gap-6 lg:px-page-desktop">
           {games.map((game) => (
-            <li key={game.id} className="w-39 shrink-0 snap-start lg:w-49">
+            <li key={game.id} className="w-42 shrink-0 snap-start sm:w-48 lg:w-56">
               <HomeGameCard game={game} />
             </li>
           ))}
