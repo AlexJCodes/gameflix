@@ -5,6 +5,7 @@ import { Button } from "../ui/Button";
 
 type GameFormProps = {
   initialGame?: Game;
+  preset?: Pick<CreateGameInput, "title" | "platform" | "coverUrl">;
   onSave: (game: CreateGameInput) => Promise<void>;
   onCancel: () => void;
   isSaving: boolean;
@@ -29,15 +30,30 @@ const stars = [1, 2, 3, 4, 5];
 const inputClasses =
   "min-h-12 w-full rounded-md border border-divider bg-background-secondary px-3.5 py-3 font-body text-body-sm text-foreground placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-export function GameForm({ initialGame, onSave, onCancel, isSaving, error }: GameFormProps) {
-  const [title, setTitle] = useState(initialGame?.title ?? "");
-  const [platform, setPlatform] = useState(initialGame?.platform ?? "");
+export function GameForm({
+  initialGame,
+  preset,
+  onSave,
+  onCancel,
+  isSaving,
+  error,
+}: GameFormProps) {
+  const [title, setTitle] = useState(initialGame?.title ?? preset?.title ?? "");
+
+  const [platform, setPlatform] = useState(initialGame?.platform ?? preset?.platform ?? "");
+
   const [status, setStatus] = useState<GameStatus>(initialGame?.status ?? "want");
+
   const [coverUrl, setCoverUrl] = useState(
-    initialGame?.coverUrl === FALLBACK_COVER_URL ? "" : (initialGame?.coverUrl ?? ""),
+    initialGame?.coverUrl === FALLBACK_COVER_URL
+      ? ""
+      : (initialGame?.coverUrl ?? preset?.coverUrl ?? ""),
   );
+
   const [rating, setRating] = useState<number | null>(initialGame?.rating ?? null);
+
   const [notes, setNotes] = useState(initialGame?.notes ?? "");
+
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const titleRef = useRef<HTMLInputElement>(null);
