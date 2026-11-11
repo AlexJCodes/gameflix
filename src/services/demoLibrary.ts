@@ -1,11 +1,10 @@
 import { createGame, getGames } from "../api/gamesApi";
 import { demoGames } from "../data/demoGames";
+import { getGameCoverUrl } from "../data/gameAssetUrls";
 import type { CreateGameInput, Game } from "../types/game";
 
 // Temporary public image hosting for the school project.
 // Replace with the deployed Gameflix asset URL later.
-const COVER_BASE_URL =
-  "https://raw.githubusercontent.com/AlexJCodes/gameflix/feat/game-api/public/images/games/covers";
 
 export function getDemoGameKey(game: Pick<Game, "title" | "platform">): string {
   const title = game.title.trim().toLowerCase();
@@ -34,7 +33,7 @@ export async function seedDemoLibrary(handle: string) {
       ...game,
       ...(coverFilename
         ? {
-            coverUrl: `${COVER_BASE_URL}/${encodeURIComponent(coverFilename)}`,
+            coverUrl: getGameCoverUrl(coverFilename),
           }
         : {}),
     };

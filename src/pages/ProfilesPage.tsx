@@ -5,7 +5,13 @@ import { DeleteProfileDialog } from "../components/profiles/DeleteProfileDialog"
 import { ProfileForm } from "../components/profiles/ProfileForm";
 import { ProfilePicker } from "../components/profiles/ProfilePicker";
 import type { ProfileAvatarId } from "../data/profileAvatars";
-import { clearActiveProfile, getActiveProfile, setActiveProfile } from "../services/activeProfile";
+import {
+  clearActiveProfile,
+  getActiveProfile,
+  setActiveDemo,
+  setActiveProfile,
+} from "../services/activeProfile";
+import { prepareDemoLibrary } from "../services/demoSession";
 import { initializeProfileLibrary } from "../services/initializeProfileLibrary";
 import {
   deleteProfile,
@@ -25,6 +31,9 @@ export function ProfilesPage() {
   const [isManaging, setIsManaging] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const [isStartingDemo, setIsStartingDemo] = useState(false);
+  const demoPending = useRef(false);
 
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
@@ -142,6 +151,28 @@ export function ProfilesPage() {
     }
   }
 
+  async function handleTryDemo() {
+    if (demoPending.current) return;
+
+    demoPending.current = true;
+    setIsStartingDemo(true);
+    setError(null);
+
+    try {
+      await prepareDemoLibrary();
+
+      setActiveDemo();
+      navigate("/home");
+    } catch (caughtError) {
+      console.error("[Gameflix] Demo initialization failed", caughtError);
+
+      setError("Couldn't prepare the demo. Please try again.");
+    } finally {
+      demoPending.current = false;
+      setIsStartingDemo(false);
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center bg-background px-6 py-12 text-foreground lg:px-page-desktop lg:py-20">
       <img src={gameflixLogo} alt="Gameflix" className="h-auto w-52 max-w-full" />
@@ -173,6 +204,8 @@ export function ProfilesPage() {
             setIsManaging((current) => !current);
             setError(null);
           }}
+          onTryDemo={handleTryDemo}
+          isStartingDemo={isStartingDemo}
         />
       )}
 

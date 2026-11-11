@@ -12,6 +12,8 @@ type ProfilePickerProps = {
   onDelete: (profile: Profile) => void;
   onAdd: () => void;
   onToggleManage: () => void;
+  onTryDemo: () => void;
+  isStartingDemo: boolean;
 };
 
 export function ProfilePicker({
@@ -24,6 +26,8 @@ export function ProfilePicker({
   onDelete,
   onAdd,
   onToggleManage,
+  onTryDemo,
+  isStartingDemo,
 }: ProfilePickerProps) {
   return (
     <section className="mt-10 flex w-full flex-col items-center lg:mt-16">
@@ -74,6 +78,27 @@ export function ProfilePicker({
           <Button variant="secondary" onClick={onToggleManage}>
             {isManaging ? "Done" : "Manage Profiles"}
           </Button>
+        </div>
+      )}
+
+      {/* Demo experience */}
+      {!isManaging && (
+        <div className="mt-14 flex w-full max-w-md flex-col items-center gap-4 border-t border-divider pt-8 text-center">
+          <h2 className="font-display text-heading-3 font-bold">Not ready to commit?</h2>
+
+          <p className="font-body text-body-sm text-muted">
+            Take Gameflix for a spin. No profile needed.
+          </p>
+
+          <Button type="button" onClick={onTryDemo} disabled={isStartingDemo} className="mt-2">
+            {isStartingDemo ? "Preparing demo…" : "Try Demo"}
+          </Button>
+
+          {isStartingDemo && (
+            <p role="status" className="text-caption text-muted">
+              Getting your games ready…
+            </p>
+          )}
         </div>
       )}
     </section>
