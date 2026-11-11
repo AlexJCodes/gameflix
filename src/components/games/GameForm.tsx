@@ -304,10 +304,6 @@ export function GameForm({ initialGame, onSave, onCancel, isSaving, error }: Gam
           Cancel
         </Button>
       </div>
-
-      <p className="text-caption text-muted">
-        Saved only to this profile’s collection. No game catalog needed.
-      </p>
     </form>
   );
 }
