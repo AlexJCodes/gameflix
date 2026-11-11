@@ -3,11 +3,11 @@ import { EmptyState } from "../components/feedback/EmptyState";
 import { ErrorPanel } from "../components/feedback/ErrorPanel";
 import { HomeGameRow } from "../components/home/HomeGameRow";
 import { HomeHero } from "../components/home/HomeHero";
+import { useActiveProfile } from "../hooks/useActiveProfile";
 import { useGames } from "../hooks/useGames";
 
 export function HomePage() {
-  // Temporary until profile selection is implemented.
-  const handle = import.meta.env.VITE_QUESTLOG_HANDLE?.trim() || null;
+  const { handle } = useActiveProfile();
 
   const { games, isLoading, error, retry } = useGames(handle);
 

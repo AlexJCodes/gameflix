@@ -4,6 +4,7 @@ import { ApiError } from "../api/ApiError";
 import { ErrorPanel } from "../components/feedback/ErrorPanel";
 import { DeleteGameDialog } from "../components/games/DeleteGameDialog";
 import { GameDetailsView } from "../components/games/GameDetailsView";
+import { useActiveProfile } from "../hooks/useActiveProfile";
 import { useGame } from "../hooks/useGame";
 import { useSaveGame } from "../hooks/useSaveGame";
 
@@ -11,7 +12,7 @@ export function GameDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const handle = import.meta.env.VITE_QUESTLOG_HANDLE?.trim() || null;
+  const { handle } = useActiveProfile();
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 

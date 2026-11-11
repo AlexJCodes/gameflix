@@ -1,8 +1,15 @@
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { SuccessToast } from "../components/feedback/SuccessToast";
 import { AppHeader } from "../components/layout/AppHeader";
+import { getActiveProfile } from "../services/activeProfile";
 
 export function AppLayout() {
+  const activeProfile = getActiveProfile();
+
+  if (!activeProfile) {
+    return <Navigate to="/profiles" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <a
@@ -12,13 +19,13 @@ export function AppLayout() {
         Skip to content
       </a>
 
-      <AppHeader />
+      <AppHeader profile={activeProfile} />
 
       <main
         id="main-content"
         className="mx-auto w-full max-w-shell px-page-mobile py-8 lg:px-page-desktop"
       >
-        <Outlet />
+        <Outlet context={activeProfile} />
       </main>
 
       <SuccessToast />

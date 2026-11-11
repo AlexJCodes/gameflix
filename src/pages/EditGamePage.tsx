@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { ApiError } from "../api/ApiError";
 import { ErrorPanel } from "../components/feedback/ErrorPanel";
 import { GameForm } from "../components/games/GameForm";
+import { useActiveProfile } from "../hooks/useActiveProfile";
 import { useGame } from "../hooks/useGame";
 import { useSaveGame } from "../hooks/useSaveGame";
 import type { CreateGameInput } from "../types/game";
@@ -9,7 +10,7 @@ import type { CreateGameInput } from "../types/game";
 export function EditGamePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const handle = import.meta.env.VITE_QUESTLOG_HANDLE?.trim() || null;
+  const { handle } = useActiveProfile();
 
   const { game, isLoading, error: loadError, retry } = useGame(handle, id);
 

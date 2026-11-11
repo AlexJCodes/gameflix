@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router";
-import profilePlaceholder from "../../assets/avatars/profile-placeholder.svg";
 import gameflixLogo from "../../assets/branding/gameflix-logo.svg";
+import type { Profile } from "../../types/profile";
+import { ProfileAvatar } from "../profiles/ProfileAvatar";
 
 const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
   [
@@ -13,7 +14,11 @@ const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
       : "border-transparent text-muted hover:text-foreground",
   ].join(" ");
 
-export function AppHeader() {
+type AppHeaderProps = {
+  profile: Profile;
+};
+
+export function AppHeader({ profile }: AppHeaderProps) {
   return (
     <header className="border-b border-divider bg-background lg:border-b-0">
       <div className="mx-auto grid w-full max-w-shell grid-cols-[1fr_auto] items-center px-6 lg:h-22 lg:grid-cols-[1fr_auto_1fr] lg:px-page-desktop">
@@ -44,16 +49,16 @@ export function AppHeader() {
           </NavLink>
         </nav>
 
-        {/* Profile – temporary placeholder */}
+        {/* Active player */}
         <Link
           to="/profiles"
-          aria-label="Choose profile"
+          aria-label={`Switch profile. Current player: ${profile.name}`}
           className="col-start-2 row-start-1 flex min-h-12 items-center justify-end gap-2 focus-visible:outline-2 focus-visible:outline-focus lg:col-start-3 lg:justify-self-end"
         >
-          <img src={profilePlaceholder} alt="" className="h-9 w-9" />
+          <ProfileAvatar avatarId={profile.avatar} className="size-9" />
 
           <span className="hidden font-body text-body-sm font-semibold text-foreground lg:inline">
-            Profiles
+            {profile.name}
           </span>
         </Link>
       </div>

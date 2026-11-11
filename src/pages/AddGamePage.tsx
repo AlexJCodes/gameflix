@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router";
 import { GameForm } from "../components/games/GameForm";
+import { useActiveProfile } from "../hooks/useActiveProfile";
 import { useSaveGame } from "../hooks/useSaveGame";
 import type { CreateGameInput } from "../types/game";
 
 export function AddGamePage() {
   const navigate = useNavigate();
-  const handle = import.meta.env.VITE_QUESTLOG_HANDLE?.trim() || null;
+  const { handle } = useActiveProfile();
 
   const { create, isSaving, error } = useSaveGame(handle ?? "");
 
@@ -49,12 +50,6 @@ export function AddGamePage() {
 
           <p className="text-body-sm text-muted">
             You provide the title, platform and cover URL. Your notes and rating make it yours.
-          </p>
-
-          <p className="mt-6 text-caption text-muted">YOUR COLLECTION · NEW ENTRY</p>
-
-          <p className="text-caption text-muted">
-            Only your personal game fields. No catalog lookup, account, or subscription.
           </p>
         </aside>
       </div>
