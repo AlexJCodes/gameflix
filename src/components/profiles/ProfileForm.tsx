@@ -8,9 +8,10 @@ type ProfileFormProps = {
   profile?: Profile;
   onSave: (name: string, avatar: ProfileAvatarId) => void;
   onCancel: () => void;
+  isSaving: boolean;
 };
 
-export function ProfileForm({ profile, onSave, onCancel }: ProfileFormProps) {
+export function ProfileForm({ profile, onSave, onCancel, isSaving }: ProfileFormProps) {
   const [name, setName] = useState(profile?.name ?? "");
   const [selectedAvatar, setSelectedAvatar] = useState<ProfileAvatarId>(profile?.avatar ?? "rune");
   const [nameError, setNameError] = useState<string | null>(null);
@@ -113,14 +114,26 @@ export function ProfileForm({ profile, onSave, onCancel }: ProfileFormProps) {
 
       {/* Form actions */}
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Button type="submit" className="flex-1">
-          {isEditing ? "Save Changes" : "Save"}
+        <Button type="submit" disabled={isSaving} className="flex-1">
+          {isSaving ? "Creating profile…" : isEditing ? "Save Changes" : "Save"}
         </Button>
 
-        <Button type="button" variant="secondary" onClick={onCancel} className="flex-1">
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={isSaving}
+          onClick={onCancel}
+          className="flex-1"
+        >
           Cancel
         </Button>
       </div>
+
+      {isSaving && (
+        <p role="status" className="text-caption text-muted">
+          Preparing your game library…
+        </p>
+      )}
     </form>
   );
 }

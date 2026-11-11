@@ -39,10 +39,9 @@ export function loadProfiles(): Profile[] {
   }
 }
 
-export function createProfile(name: string, avatar: ProfileAvatarId): Profile {
-  const profiles = loadProfiles();
-
-  if (profiles.length >= MAX_PROFILES) {
+// Create a profile object without saving it.
+export function prepareProfile(name: string, avatar: ProfileAvatarId): Profile {
+  if (loadProfiles().length >= MAX_PROFILES) {
     throw new Error("You can have up to 5 profiles.");
   }
 
@@ -52,18 +51,43 @@ export function createProfile(name: string, avatar: ProfileAvatarId): Profile {
     throw new Error("Profile names must be 1–20 characters.");
   }
 
+  if (!PROFILE_AVATARS.some((item) => item.id === avatar)) {
+    throw new Error("Invalid profile avatar.");
+  }
+
   const id = crypto.randomUUID();
 
-  const profile: Profile = {
+  return {
     id,
     name: trimmedName,
     avatar,
     handle: `gf-${id.replaceAll("-", "")}`,
   };
+}
+
+// Save only after the API library has been initialized.
+export function saveProfile(profile: Profile): void {
+  const profiles = loadProfiles();
+
+  if (profiles.length >= MAX_PROFILES) {
+    throw new Error("You can have up to 5 profiles.");
+  }
+
+  if (
+    !isProfile(profile) ||
+    profile.name.trim().length > 20 ||
+    !/^gf-[a-f0-9]{32}$/.test(profile.handle)
+  ) {
+    throw new Error("Invalid profile data.");
+  }
+
+  if (
+    profiles.some((existing) => existing.id === profile.id || existing.handle === profile.handle)
+  ) {
+    throw new Error("Profile already exists.");
+  }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...profiles, profile]));
-
-  return profile;
 }
 
 type ProfileChanges = Pick<Profile, "name" | "avatar">;
@@ -81,6 +105,10 @@ export function updateProfile(id: string, changes: ProfileChanges): Profile {
 
   if (trimmedName.length < 1 || trimmedName.length > 20) {
     throw new Error("Profile names must be 1–20 characters.");
+  }
+
+  if (!PROFILE_AVATARS.some((item) => item.id === changes.avatar)) {
+    throw new Error("Invalid profile avatar.");
   }
 
   const updatedProfile: Profile = {
