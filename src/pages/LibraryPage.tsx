@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { CollectionLoadingState } from "../components/feedback/CollectionLoadingState";
 import { EmptyState } from "../components/feedback/EmptyState";
@@ -12,11 +12,20 @@ import {
 import { Button } from "../components/ui/Button";
 import { useActiveProfile } from "../hooks/useActiveProfile";
 import { useGames } from "../hooks/useGames";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+
+function isLibraryFilter(value: unknown): value is LibraryFilter {
+  return libraryFilters.some((filter) => filter.value === value);
+}
 
 export function LibraryPage() {
-  const { handle } = useActiveProfile();
+  const { id, handle } = useActiveProfile();
 
-  const [selectedFilter, setSelectedFilter] = useState<LibraryFilter>("all");
+  const [selectedFilter, setSelectedFilter] = useLocalStorage<LibraryFilter>(
+    `gameflix.libraryFilter.${id}.v1`,
+    "all",
+    isLibraryFilter,
+  );
 
   const { games, isLoading, error, retry } = useGames(handle);
 
