@@ -62,7 +62,7 @@ export function ProfilesPage() {
 
       demoRunRef.current += 1;
 
-      navigate("/home");
+      navigate("/intro");
     } catch (caughtError) {
       setError(
         caughtError instanceof Error ? caughtError.message : "Could not select your profile.",
@@ -177,7 +177,7 @@ export function ProfilesPage() {
       if (currentRun !== demoRunRef.current) return;
 
       setActiveDemo();
-      navigate("/home");
+      navigate("/intro");
     } catch (caughtError) {
       if (currentRun !== demoRunRef.current) return;
 

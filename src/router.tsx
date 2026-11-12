@@ -4,6 +4,7 @@ import { AddGamePage } from "./pages/AddGamePage";
 import { EditGamePage } from "./pages/EditGamePage";
 import { GameDetailsPage } from "./pages/GameDetailsPage";
 import { HomePage } from "./pages/HomePage";
+import { IntroPage } from "./pages/IntroPage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ProfilesPage } from "./pages/ProfilesPage";
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
   {
     path: "/profiles",
     Component: ProfilesPage,
+  },
+  {
+    path: "/intro",
+    Component: IntroPage,
   },
   {
     Component: AppLayout,
