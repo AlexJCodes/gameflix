@@ -27,16 +27,24 @@ export function GameDetailsView({ game, onDelete }: GameDetailsViewProps) {
   return (
     <article className="-mx-page-mobile -mt-8 lg:-mx-page-desktop">
       {/* Hero */}
-      <div className="relative flex h-80 items-end px-6 pb-6 lg:h-90 lg:px-page-desktop lg:pb-12">
-        <GameCover
-          src={getGameHeroUrl(game.title)}
-          alt=""
-          fallbackSrc="/images/games/fallback/missing-hero-art.webp"
-          className="absolute inset-0"
-        />
+      <div className="relative flex flex-col lg:h-90 lg:justify-end lg:px-page-desktop lg:pb-12">
+        {/* Hero artwork */}
+        <div className="relative aspect-video w-full overflow-hidden bg-surface lg:absolute lg:inset-0 lg:aspect-auto">
+          <GameCover
+            src={getGameHeroUrl(game.title)}
+            alt=""
+            fallbackSrc="/images/games/fallback/missing-hero-art.webp"
+            className="absolute inset-0"
+          />
 
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-background/25 via-transparent to-background" />
+          {/* Mobile gradient */}
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/30 to-transparent lg:hidden" />
 
+          {/* Desktop gradient */}
+          <div className="pointer-events-none absolute inset-0 hidden bg-linear-to-b from-background/25 via-transparent to-background lg:block" />
+        </div>
+
+        {/* Back navigation */}
         <Link
           to="/library"
           className="absolute top-6 left-6 z-10 inline-flex min-h-12 items-center rounded-md bg-background px-4 font-body text-button font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus lg:left-16"
@@ -44,7 +52,8 @@ export function GameDetailsView({ game, onDelete }: GameDetailsViewProps) {
           ← Back
         </Link>
 
-        <h1 className="relative z-10 max-w-4xl wrap-break-word font-display text-heading-1 font-bold lg:text-display">
+        {/* Game title */}
+        <h1 className="relative z-10 max-w-4xl wrap-break-word px-6 pt-6 pb-6 font-display text-heading-1 font-bold lg:px-0 lg:pt-0 lg:pb-0 lg:text-display">
           {game.title}
         </h1>
       </div>

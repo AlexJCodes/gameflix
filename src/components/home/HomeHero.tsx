@@ -27,23 +27,28 @@ export function HomeHero({ game }: HomeHeroProps) {
   return (
     <section
       aria-label={`Featured game: ${game.title}`}
-      className="relative isolate flex min-h-144 items-end overflow-hidden bg-background px-page-mobile pt-24 pb-10 lg:min-h-142 lg:px-page-desktop lg:pb-12"
+      className="relative isolate flex flex-col overflow-hidden bg-background lg:min-h-142 lg:justify-end lg:px-page-desktop lg:pt-24 lg:pb-12"
     >
       {/* Hero artwork */}
-      <GameCover
-        src={heroUrl}
-        alt=""
-        fallbackSrc="/images/games/fallback/missing-hero-art.webp"
-        className="absolute inset-0 z-0"
-      />
+      <div className="relative aspect-video w-full overflow-hidden bg-surface lg:absolute lg:inset-0 lg:aspect-auto">
+        <GameCover
+          src={heroUrl}
+          alt=""
+          fallbackSrc="/images/games/fallback/missing-hero-art.webp"
+          className="absolute inset-0"
+        />
 
-      {/* Image readability */}
-      <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-b from-background/5 via-background/40 to-background" />
+        {/* Mobile: subtle bottom gradient */}
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/60 via-transparent to-transparent lg:hidden" />
 
-      <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-r from-background/80 via-background/20 to-transparent" />
+        {/* Desktop: existing cinematic gradients */}
+        <div className="pointer-events-none absolute inset-0 hidden bg-linear-to-b from-background/5 via-background/40 to-background lg:block" />
+
+        <div className="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-background/80 via-background/20 to-transparent lg:block" />
+      </div>
 
       {/* Featured game information */}
-      <div className="relative z-20 flex w-full max-w-150 flex-col items-start gap-4">
+      <div className="relative z-20 flex w-full max-w-150 flex-col items-start gap-4 px-page-mobile pt-6 pb-10 lg:px-0 lg:pt-0 lg:pb-0">
         <p className="font-body text-caption font-bold text-brand">
           YOUR COLLECTION, IN THE SPOTLIGHT
         </p>
