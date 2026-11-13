@@ -6,6 +6,7 @@ import { Button } from "../components/ui/Button";
 import type { DemoGame } from "../data/demoGames";
 import { getGameCoverUrl } from "../data/gameAssetUrls";
 import { useActiveProfile } from "../hooks/useActiveProfile";
+import { useGameMutationView } from "../hooks/useGameMutationView";
 import { useSaveGame } from "../hooks/useSaveGame";
 import type { CreateGameInput } from "../types/game";
 
@@ -13,7 +14,8 @@ type GamePreset = Pick<CreateGameInput, "title" | "platform" | "coverUrl">;
 
 export function AddGamePage() {
   const navigate = useNavigate();
-  const { handle } = useActiveProfile();
+  const { id: profileId, handle } = useActiveProfile();
+  const captureView = useGameMutationView(profileId, handle);
 
   const { create, isSaving, error } = useSaveGame(handle ?? "");
 
@@ -35,8 +37,12 @@ export function AddGamePage() {
   }
 
   async function handleSave(game: CreateGameInput) {
+    const isCurrentView = captureView();
+
     try {
       const createdGame = await create(game);
+
+      if (!isCurrentView()) return;
 
       navigate(`/games/${createdGame.id}`, {
         state: {

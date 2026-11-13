@@ -6,13 +6,15 @@ import { DeleteGameDialog } from "../components/games/DeleteGameDialog";
 import { GameDetailsView } from "../components/games/GameDetailsView";
 import { useActiveProfile } from "../hooks/useActiveProfile";
 import { useGame } from "../hooks/useGame";
+import { useGameMutationView } from "../hooks/useGameMutationView";
 import { useSaveGame } from "../hooks/useSaveGame";
 
 export function GameDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { handle } = useActiveProfile();
+  const { id: profileId, handle } = useActiveProfile();
+  const captureView = useGameMutationView(profileId, handle, id);
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -28,8 +30,12 @@ export function GameDetailsPage() {
   async function handleDelete() {
     if (!game) return;
 
+    const isCurrentView = captureView();
+
     try {
       await remove(game.id);
+
+      if (!isCurrentView()) return;
 
       navigate("/library", {
         replace: true,
