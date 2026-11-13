@@ -4,13 +4,15 @@ import { ErrorPanel } from "../components/feedback/ErrorPanel";
 import { GameForm } from "../components/games/GameForm";
 import { useActiveProfile } from "../hooks/useActiveProfile";
 import { useGame } from "../hooks/useGame";
+import { useGameMutationView } from "../hooks/useGameMutationView";
 import { useSaveGame } from "../hooks/useSaveGame";
 import type { CreateGameInput } from "../types/game";
 
 export function EditGamePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { handle } = useActiveProfile();
+  const { id: profileId, handle } = useActiveProfile();
+  const captureView = useGameMutationView(profileId, handle, id);
 
   const { game, isLoading, error: loadError, retry } = useGame(handle, id);
 
@@ -19,8 +21,12 @@ export function EditGamePage() {
   async function handleSave(changes: CreateGameInput) {
     if (!game) return;
 
+    const isCurrentView = captureView();
+
     try {
       await update(game.id, changes);
+
+      if (!isCurrentView()) return;
 
       navigate(`/games/${game.id}`, {
         state: { successMessage: "Changes saved." },
