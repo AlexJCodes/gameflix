@@ -3,10 +3,6 @@ import { ApiError, isAbortError } from "./ApiError";
 
 const API_BASE_URL = "https://questlog-api.vercel.app/api";
 
-type ApiRequestOptions = RequestInit & {
-  responseType?: "json" | "none";
-};
-
 type GetGamesOptions = {
   status?: GameStatus;
   signal?: AbortSignal;
@@ -16,9 +12,28 @@ function gamesPath(handle: string): string {
   return `/${encodeURIComponent(handle)}/games`;
 }
 
-async function request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-  const { responseType = "json", ...fetchOptions } = options;
+function isGame(value: unknown): value is Game {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
 
+  const { id, title, platform, status, rating, coverUrl, notes } = value as Record<string, unknown>;
+  return (
+    typeof id === "string" &&
+    typeof title === "string" &&
+    typeof platform === "string" &&
+    (status === "want" || status === "playing" || status === "completed" || status === "dropped") &&
+    (rating == null || (typeof rating === "number" && Number.isFinite(rating))) &&
+    (coverUrl == null || typeof coverUrl === "string") &&
+    (notes == null || typeof notes === "string")
+  );
+}
+
+function isGameCollection(value: unknown): value is Game[] {
+  return Array.isArray(value) && value.every(isGame);
+}
+
+async function request(path: string, fetchOptions: RequestInit = {}): Promise<Response> {
   const method = (fetchOptions.method ?? "GET").toUpperCase();
 
   let response: Response;
@@ -48,11 +63,16 @@ async function request<T>(path: string, options: ApiRequestOptions = {}): Promis
     });
   }
 
-  // DELETE does not require a JSON response body.
-  if (responseType === "none") {
-    return undefined as T;
-  }
+  return response;
+}
 
+async function requestJson<T>(
+  path: string,
+  isValid: (value: unknown) => value is T,
+  options: RequestInit = {},
+): Promise<T> {
+  const response = await request(path, options);
+  const method = (options.method ?? "GET").toUpperCase();
   if (response.status === 204) {
     throw new ApiError({
       kind: "invalid-response",
@@ -62,10 +82,11 @@ async function request<T>(path: string, options: ApiRequestOptions = {}): Promis
     });
   }
 
+  let data: unknown;
   try {
-    return (await response.json()) as T;
+    data = await response.json();
   } catch (cause) {
-    if (isAbortError(cause) || fetchOptions.signal?.aborted) {
+    if (isAbortError(cause) || options.signal?.aborted) {
       throw cause;
     }
 
@@ -77,37 +98,32 @@ async function request<T>(path: string, options: ApiRequestOptions = {}): Promis
       cause,
     });
   }
+
+  if (!isValid(data)) {
+    throw new ApiError({ kind: "invalid-response", method, path, status: response.status });
+  }
+
+  return data;
 }
 
 // GET - Collection
-export async function getGames(
+export function getGames(
   handle: string,
   { status, signal }: GetGamesOptions = {},
 ): Promise<Game[]> {
   const query = status ? `?status=${encodeURIComponent(status)}` : "";
 
-  const path = `${gamesPath(handle)}${query}`;
-  const data = await request<unknown>(path, { signal });
-
-  if (!Array.isArray(data)) {
-    throw new ApiError({
-      kind: "invalid-response",
-      method: "GET",
-      path,
-    });
-  }
-
-  return data as Game[];
+  return requestJson(`${gamesPath(handle)}${query}`, isGameCollection, { signal });
 }
 
 // GET - Single game
 export function getGame(handle: string, id: string, signal?: AbortSignal): Promise<Game> {
-  return request<Game>(`${gamesPath(handle)}/${encodeURIComponent(id)}`, { signal });
+  return requestJson(`${gamesPath(handle)}/${encodeURIComponent(id)}`, isGame, { signal });
 }
 
 // POST - Create game
 export function createGame(handle: string, game: CreateGameInput): Promise<Game> {
-  return request<Game>(gamesPath(handle), {
+  return requestJson(gamesPath(handle), isGame, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -118,7 +134,7 @@ export function createGame(handle: string, game: CreateGameInput): Promise<Game>
 
 // PATCH - Update game
 export function updateGame(handle: string, id: string, changes: UpdateGameInput): Promise<Game> {
-  return request<Game>(`${gamesPath(handle)}/${encodeURIComponent(id)}`, {
+  return requestJson(`${gamesPath(handle)}/${encodeURIComponent(id)}`, isGame, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -128,9 +144,6 @@ export function updateGame(handle: string, id: string, changes: UpdateGameInput)
 }
 
 // DELETE - Remove game
-export function deleteGame(handle: string, id: string): Promise<void> {
-  return request<void>(`${gamesPath(handle)}/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-    responseType: "none",
-  });
+export async function deleteGame(handle: string, id: string): Promise<void> {
+  await request(`${gamesPath(handle)}/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
