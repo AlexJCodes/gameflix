@@ -26,6 +26,11 @@ export function GamePresetPicker({ onSelect, onClose }: GamePresetPickerProps) {
     };
   }, []);
 
+  function dismissPicker() {
+    dialogRef.current?.close();
+    onClose();
+  }
+
   const filteredGames = demoGames.filter((game) =>
     `${game.title} ${game.platform}`.toLowerCase().includes(query.trim().toLowerCase()),
   );
@@ -37,7 +42,7 @@ export function GamePresetPicker({ onSelect, onClose }: GamePresetPickerProps) {
       aria-describedby="quick-add-description"
       onCancel={(event) => {
         event.preventDefault();
-        onClose();
+        dismissPicker();
       }}
       className="fixed inset-0 m-auto max-h-[85vh] w-[calc(100%-2rem)] max-w-3xl overflow-y-auto rounded-xl border border-divider bg-surface p-5 text-foreground shadow-2xl backdrop:bg-black/80 sm:p-8"
     >
@@ -56,7 +61,7 @@ export function GamePresetPicker({ onSelect, onClose }: GamePresetPickerProps) {
         <button
           type="button"
           aria-label="Close Quick Add"
-          onClick={onClose}
+          onClick={dismissPicker}
           className="flex size-10 shrink-0 items-center justify-center rounded-md text-muted hover:bg-surface-elevated hover:text-foreground focus-visible:outline-2 focus-visible:outline-focus"
         >
           <span aria-hidden="true">✕</span>
@@ -92,7 +97,10 @@ export function GamePresetPicker({ onSelect, onClose }: GamePresetPickerProps) {
             <li key={`${game.title}-${game.platform}`}>
               <button
                 type="button"
-                onClick={() => onSelect(game)}
+                onClick={() => {
+                  dialogRef.current?.close();
+                  onSelect(game);
+                }}
                 className="flex min-h-24 w-full items-center gap-3 rounded-md border border-divider bg-background-secondary p-3 text-left transition-colors hover:border-brand hover:bg-surface-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
               >
                 <GameCover

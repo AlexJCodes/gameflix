@@ -73,7 +73,11 @@ export function AddGamePage() {
             <Button
               variant="secondary"
               disabled={isSaving}
-              onClick={() => setIsPickerOpen(true)}
+              onClick={(event) => {
+                // Some browsers do not focus buttons on mouse click.
+                event.currentTarget.focus();
+                setIsPickerOpen(true);
+              }}
               className="shrink-0"
             >
               Browse Games
