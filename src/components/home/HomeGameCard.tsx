@@ -33,7 +33,7 @@ export function HomeGameCard({ game }: HomeGameCardProps) {
         </h3>
 
         <div className="flex min-w-0 items-start justify-between gap-2 text-caption">
-          <span className="min-w-0 truncate text-muted">{game.platform}</span>
+          <span className="min-w-0 wrap-break-word text-muted">{game.platform}</span>
 
           {hasRating && (
             <span className="shrink-0 text-warning">

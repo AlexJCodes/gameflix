@@ -62,9 +62,9 @@ export function GameDetailsView({ game, onDelete }: GameDetailsViewProps) {
       <div className="grid gap-12 px-6 pb-12 lg:grid-cols-[minmax(0,760px)_248px] lg:px-page-desktop">
         <div className="flex min-w-0 flex-col gap-6">
           <dl className="flex flex-wrap gap-8">
-            <div className="flex flex-col gap-2">
+            <div className="flex min-w-0 flex-col gap-2">
               <dt className="text-caption text-muted">PLATFORM</dt>
-              <dd className="text-lg">{game.platform}</dd>
+              <dd className="wrap-break-word text-lg">{game.platform}</dd>
             </div>
 
             <div className="flex flex-col gap-2">

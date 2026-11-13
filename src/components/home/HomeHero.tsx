@@ -62,10 +62,12 @@ export function HomeHero({ game }: HomeHeroProps) {
         </h1>
 
         {/* Status, platform and rating */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex max-w-full flex-wrap items-center gap-3">
           <StatusBadge status={statusLabels[game.status]} />
 
-          <span className="font-body text-body-sm text-muted">{game.platform}</span>
+          <span className="min-w-0 wrap-break-word font-body text-body-sm text-muted">
+            {game.platform}
+          </span>
 
           {hasRating && game.rating != null && (
             <span className="font-body text-body-sm text-warning">
