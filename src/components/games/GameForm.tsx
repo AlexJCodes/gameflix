@@ -1,4 +1,4 @@
-import { type SubmitEvent, useRef, useState } from "react";
+import { type SubmitEvent, useEffect, useRef, useState } from "react";
 import { FALLBACK_COVER_URL } from "../../data/gameArtwork";
 import type { CreateGameInput, Game, GameStatus } from "../../types/game";
 import { Button } from "../ui/Button";
@@ -59,6 +59,10 @@ export function GameForm({
   const titleRef = useRef<HTMLInputElement>(null);
   const platformRef = useRef<HTMLInputElement>(null);
   const coverUrlRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (preset) titleRef.current?.focus();
+  }, [preset]);
 
   function validate(): boolean {
     const nextErrors: FieldErrors = {};
