@@ -1,4 +1,5 @@
 import { type SubmitEvent, useEffect, useRef, useState } from "react";
+import { ApiError } from "../../api/ApiError";
 import { FALLBACK_COVER_URL } from "../../data/gameArtwork";
 import type { CreateGameInput, Game, GameStatus } from "../../types/game";
 import { Button } from "../ui/Button";
@@ -16,7 +17,12 @@ type FieldErrors = {
   title?: string;
   platform?: string;
   coverUrl?: string;
+  notes?: string;
 };
+
+const titleLimit = 100;
+const platformLimit = 40;
+const notesLimit = 1000;
 
 const statusOptions: { value: GameStatus; label: string }[] = [
   { value: "want", label: "Want to Play" },
@@ -59,32 +65,33 @@ export function GameForm({
   const titleRef = useRef<HTMLInputElement>(null);
   const platformRef = useRef<HTMLInputElement>(null);
   const coverUrlRef = useRef<HTMLInputElement>(null);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (preset) titleRef.current?.focus();
   }, [preset]);
 
-  function validate(): boolean {
+  function validate({ title, platform, coverUrl, notes }: CreateGameInput): boolean {
     const nextErrors: FieldErrors = {};
 
-    if (!title.trim()) {
+    if (!title) {
       nextErrors.title = "Enter a game title.";
+    } else if (title.length > titleLimit) {
+      nextErrors.title = `Use ${titleLimit} characters or fewer for the title.`;
     }
 
-    if (!platform.trim()) {
+    if (!platform) {
       nextErrors.platform = "Enter a platform.";
+    } else if (platform.length > platformLimit) {
+      nextErrors.platform = `Use ${platformLimit} characters or fewer for the platform.`;
     }
 
-    if (coverUrl.trim()) {
-      try {
-        const url = new URL(coverUrl.trim());
+    if (coverUrl && (!/^https:\/\//i.test(coverUrl) || !URL.canParse(coverUrl))) {
+      nextErrors.coverUrl = "Use a valid https:// image URL or leave blank.";
+    }
 
-        if (url.protocol !== "https:") {
-          throw new Error("HTTPS required");
-        }
-      } catch {
-        nextErrors.coverUrl = "Use a valid https:// image URL or leave blank.";
-      }
+    if (notes && notes.length > notesLimit) {
+      nextErrors.notes = "Use 1,000 characters or fewer for notes.";
     }
 
     setErrors(nextErrors);
@@ -92,6 +99,7 @@ export function GameForm({
     if (nextErrors.title) titleRef.current?.focus();
     else if (nextErrors.platform) platformRef.current?.focus();
     else if (nextErrors.coverUrl) coverUrlRef.current?.focus();
+    else if (nextErrors.notes) notesRef.current?.focus();
 
     return Object.keys(nextErrors).length === 0;
   }
@@ -99,28 +107,36 @@ export function GameForm({
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (isSaving || !validate()) return;
+    if (isSaving) return;
 
+    const trimmedCoverUrl = coverUrl.trim();
+    const trimmedNotes = notes.trim();
     const game: CreateGameInput = {
       title: title.trim(),
       platform: platform.trim(),
       status,
     };
 
-    if (initialGame) {
-      game.coverUrl = coverUrl.trim() || FALLBACK_COVER_URL;
-      game.rating = rating;
-      game.notes = notes.trim();
-    } else {
-      if (coverUrl.trim()) game.coverUrl = coverUrl.trim();
-      if (rating !== null) game.rating = rating;
-      if (notes.trim()) game.notes = notes.trim();
+    const savedCoverUrl = initialGame?.coverUrl?.trim() || "";
+    if (trimmedCoverUrl && trimmedCoverUrl !== savedCoverUrl) {
+      game.coverUrl = trimmedCoverUrl;
+    }
+
+    if (initialGame || rating !== null) game.rating = rating;
+    if (initialGame || trimmedNotes) game.notes = trimmedNotes;
+
+    if (!validate(game)) return;
+
+    if (!trimmedCoverUrl && savedCoverUrl && savedCoverUrl !== FALLBACK_COVER_URL) {
+      game.coverUrl = FALLBACK_COVER_URL;
     }
 
     await onSave(game);
   }
 
   const isEditing = Boolean(initialGame);
+  const isValidationError =
+    error instanceof ApiError && error.kind === "http" && error.status === 400;
 
   return (
     <form noValidate onSubmit={handleSubmit} className="flex w-full flex-col gap-6">
@@ -140,7 +156,11 @@ export function GameForm({
         <div role="alert" className="rounded-md border border-danger bg-surface p-4">
           <p className="font-semibold text-danger">We couldn’t save your game.</p>
           <p className="mt-2 text-body-sm text-muted">
-            Your changes are still here. Check your connection and try again.
+            {isValidationError
+              ? "Your changes are still here. Review the title, platform, rating, notes and any new cover URL, then try again."
+              : error instanceof ApiError && error.kind === "network"
+                ? "Your changes are still here. Check your connection and try again."
+                : "Your changes are still here. Try saving again."}
           </p>
         </div>
       )}
@@ -305,14 +325,26 @@ export function GameForm({
         </label>
 
         <textarea
+          ref={notesRef}
           id="game-notes"
           rows={4}
           disabled={isSaving}
           value={notes}
           placeholder="A reminder for your future self…"
-          onChange={(event) => setNotes(event.target.value)}
-          className={`${inputClasses} min-h-28 resize-y`}
+          aria-invalid={Boolean(errors.notes)}
+          aria-describedby={errors.notes ? "game-notes-error" : undefined}
+          onChange={(event) => {
+            setNotes(event.target.value);
+            setErrors((previous) => ({ ...previous, notes: undefined }));
+          }}
+          className={`${inputClasses} min-h-28 resize-y ${errors.notes ? "border-danger" : ""}`}
         />
+
+        {errors.notes && (
+          <p id="game-notes-error" className="text-caption text-danger">
+            {errors.notes}
+          </p>
+        )}
       </div>
 
       <div className="flex gap-3">
